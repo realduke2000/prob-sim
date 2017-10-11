@@ -10,11 +10,14 @@
   <!-- Site content goes here !-->
   <script src="dist/chartist.js" type="text/javascript"></script>
   <script src="draw.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 
   <div>
-    <button onclick="draw1()">Draw</button>
+    <button onclick="drawbychartist()">Draw By Chartist</button>
+    <button onclick="drawbychartjs()">Draw By Chartjs</button>
   </div>
   <div class="ct-chart ct-perfect-fourth"></div>
+  <canvas id="myChart"></canvas>
 </body>
 
 </html>
