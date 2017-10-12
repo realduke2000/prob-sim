@@ -4,12 +4,11 @@
 
   params:
     maxtimes:1000
-    steps:20
     probs:3
 
   returns:
     [
-      times:[50,100,150,...,1000],
+      times:[1,2,3,5,8,13...], // fab
       counters:[
         0:[10,...,333], // length = 20
         1:[15,...,333],
@@ -17,14 +16,21 @@
       ]
     ]
 */
-function rand_freq(maxtimes, slices, probs) {
-  interval = Math.floor(maxtimes / slices);
+function rand_freq(maxtimes, probs) {
   freq = {};
-  freq.times = [];
+  freq.times = [1];
+  // compose Fibonacci sequence
+  for (i = 2; i < maxtimes; i = freq.times[freq.times.length - 2] + freq.times[freq.times.length - 1]) {
+    freq.times.push(i);
+  }
+
+  if (freq.times[freq.times.length - 1] != maxtimes) {
+    freq.times.push(maxtimes);
+  }
+
   freq.counters = [];
-  for (i = 0; i < slices; i++) {
+  for (i = 0; i < freq.times.length; i++) {
     freq.counters[i] = [];
-    freq.times[i] = (i + 1) * interval;
   }
 
   slices_index = 0;
@@ -35,7 +41,10 @@ function rand_freq(maxtimes, slices, probs) {
   }
 
   for (i = 0; i < maxtimes; i++) {
-    if (i == freq.times[slices_index]) {
+    r = Math.floor(Math.random() * probs); // random nubmer between 0 ~ probs
+    freq.counters[slices_index][r]++;
+
+    if (i + 1 == freq.times[slices_index] && slices_index + 1 < freq.times.length) {
       // all counters step up, accumulate with previous counter
       for (j = 0; j < probs; j++) {
         try {
@@ -50,9 +59,6 @@ function rand_freq(maxtimes, slices, probs) {
       }
       slices_index++;
     }
-
-    r = Math.floor(Math.random() * probs); // random nubmer between 0 ~ probs
-    freq.counters[slices_index][r]++;
   }
   return freq;
 }
@@ -73,15 +79,33 @@ function drawbychartist() {
     low: 0,
     showLine: true,
   };
-  MAX_TIMES = 1000;
-  SLICES = 25;
-  PROBS = 6;
-  freq = rand_freq(MAX_TIMES, SLICES, PROBS);
+
+  max_times = parseInt(document.getElementById("times").value);
+  if (isNaN(max_times)) {
+    alert("Experiment times are not integer!");
+    return;
+  }
+
+  max_probs = -1;
+  radios = document.getElementsByName("probs-types");
+  for (i = 0; i < radios.length; i++) {
+    if (radios[i].checked) {
+      max_probs = parseInt(radios[i].value);
+    }
+  }
+
+  if (max_probs == -1 || isNaN(max_probs)) {
+    alert("Please select an experiment(dice, coin, ball)");
+    return;
+  }
+
+
+  freq = rand_freq(max_times, max_probs);
   probs = [];
   refprobs = []
-  for (i = 0; i < SLICES; i++) {
+  for (i = 0; i < freq.times.length; i++) {
     probs[i] = freq.counters[i][0] / freq.times[i];
-    refprobs[i] = 1.0 / PROBS;
+    refprobs[i] = 1.0 / max_probs;
   }
 
   var chart = new Chartist.Line('.ct-chart', {
@@ -96,7 +120,7 @@ function drawbychartist() {
   });
 
   chart.on('draw', function(data) {
-    if (data.type == 'point') {
+    if (data.type == 'point' || data.type == 'line') {
       data.element.animate({
         opacity: {
           begin: seq++ * duration,

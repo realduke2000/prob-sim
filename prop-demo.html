@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Probability Demo</title>
+  <title>Probability Distribution Simulator</title>
   <link rel="stylesheet" href="dist/chartist.min.css">
 </head>
 
@@ -13,11 +13,21 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 
   <div>
-    <button onclick="drawbychartist()">Draw By Chartist</button>
-    <button onclick="drawbychartjs()">Draw By Chartjs</button>
+    <h3>Probability Distribution Simulator</h3>
+    <!-- <img src="dice.jpeg" alt="i'm sad" style="width:320px;height:240px;"><br> -->
+    <label>
+      <input type="radio" name="probs-types", value="6" id="rad-dice" checked=true/>
+      <img src="dice.jpg" style="width:120px;height:80;">
+      <input type="radio" name="probs-types", value="2"  id="rad-coin"/>
+      <img src="coin.jpg" style="width:120px;height:80;">
+      <input type="radio" name="probs-types", value="3" id="rad-ball"/>
+      <img src="ball.jpg" style="width:120px;height:80;">
+    </label></br></br>
+    Experiment Times:
+    <input type="text" id="times"></input></br>
+    <button onclick="drawbychartist()">Start</button>
   </div>
   <div class="ct-chart ct-perfect-fourth"></div>
-  <canvas id="myChart"></canvas>
 </body>
 
 </html>
