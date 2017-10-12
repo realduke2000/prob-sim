@@ -110,7 +110,7 @@ function drawbychartist() {
 
   var chart = new Chartist.Line('.ct-chart', {
     labels: freq.times,
-    series: [probs, refprobs]
+    series: [refprobs, probs]
   }, options);
   duration = 100;
   seq = 0;
