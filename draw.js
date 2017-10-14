@@ -63,21 +63,14 @@ function rand_freq(maxtimes, probs) {
   return freq;
 }
 
-function drawbychartjs() {
-  var ctx = document.getElementById("myChart").getContext('2d');
-  var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: data,
-    options: options
-  });
-}
-
 function drawbychartist() {
   var options = {
     width: 1000,
     height: 500,
     low: 0,
     showLine: true,
+    showPoint: false,
+    // lineSmooth: false,
   };
 
   max_times = parseInt(document.getElementById("times").value);
@@ -112,7 +105,7 @@ function drawbychartist() {
     labels: freq.times,
     series: [refprobs, probs]
   }, options);
-  duration = 100;
+  duration = 1000;
   seq = 0;
 
   chart.on('created', function() {
@@ -120,15 +113,43 @@ function drawbychartist() {
   });
 
   chart.on('draw', function(data) {
+
     if (data.type == 'point' || data.type == 'line') {
+      console.log(data);
       data.element.animate({
         opacity: {
           begin: seq++ * duration,
           dur: duration,
           from: 0,
-          to: 1
-        }
+          to: 1,
+        },
       });
+
+      var paths = document.querySelectorAll('path');
+      for (i = 0; i < paths.length; i++){
+        path = paths[i];
+        var length = path.getTotalLength();
+        // Clear any previous transition
+        path.style.transition = path.style.WebkitTransition =
+          'none';
+        // Set up the starting positions
+        path.style.strokeDasharray = length + ' ' + length;
+        path.style.strokeDashoffset = length;
+        // Trigger a layout so styles are calculated & the browser
+        // picks up the starting position before animating
+        path.getBoundingClientRect();
+        // Define our transition
+        if (i == 0){
+          path.style.transition = path.style.WebkitTransition =
+            'stroke-dashoffset 0.1s ease-in-out';
+        }else {
+          path.style.transition = path.style.WebkitTransition =
+            'stroke-dashoffset 8s ease-in-out';
+        }
+
+        // Go!
+        path.style.strokeDashoffset = '0';
+      }
     }
   });
 }
